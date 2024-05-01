@@ -8,12 +8,15 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @EnvironmentObject var viewModel: AuthViewModel
+    
     var body: some View {
-        VStack {
+        // if there's a logged in user
+        if let user = viewModel.currentUser {
             List {
                 Section {
                     HStack {
-                        Text(User.MOCK_USER.initials)
+                        Text(user.initials)
                             .fontWeight(.bold)
                             .font(.title)
                             .foregroundStyle(Color.white)
@@ -22,11 +25,11 @@ struct ProfileView: View {
                             .clipShape(Circle())
                         
                         VStack(alignment: .leading) {
-                            Text(User.MOCK_USER.fullName)
+                            Text(user.fullName)
                                 .font(.headline)
                                 .fontWeight(.semibold)
                             
-                            Text(User.MOCK_USER.email)
+                            Text(user.email)
                                 .font(.subheadline)
                                 .tint(Color(.systemGray))
                         }
@@ -48,7 +51,7 @@ struct ProfileView: View {
                 
                 Section("Account") {
                     Button {
-                        print("Sign out")
+                        viewModel.signOut()
                     } label: {
                         SettingRowView(imageName: "arrow.left.circle.fill",
                                        title: "Sign out",
@@ -68,6 +71,6 @@ struct ProfileView: View {
     }
 }
 
-#Preview {
-    ProfileView()
-}
+//#Preview {
+//    ProfileView()
+//}

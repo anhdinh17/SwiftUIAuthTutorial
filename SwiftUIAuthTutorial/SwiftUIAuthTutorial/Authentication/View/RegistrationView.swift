@@ -13,6 +13,7 @@ struct RegistrationView: View {
     @State var fullName: String = ""
     @State var password: String = ""
     @State var confirmPassword: String = ""
+    @EnvironmentObject var viewModel: AuthViewModel
     
     var body: some View {
         VStack {
@@ -40,16 +41,38 @@ struct RegistrationView: View {
                           placeHolder: "Enter your password",
                           isSecureField: true)
                 
-                InputView(text: $confirmPassword,
-                          title: "Confirm Password",
-                          placeHolder: "Confirm your password",
-                          isSecureField: true)
+                // Use ZStack to display checkmark
+                ZStack(alignment: .trailing) {
+                    InputView(text: $confirmPassword,
+                              title: "Confirm Password",
+                              placeHolder: "Confirm your password",
+                              isSecureField: true)
+                    
+                    // Check for password and confirm password to be the same
+                    if !password.isEmpty && !confirmPassword.isEmpty {
+                        if password == confirmPassword {
+                            Image(systemName: "checkmark.circle.fill")
+                                .imageScale(.large)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.green)
+                        } else {
+                            Image(systemName: "xmark.circle.fill")
+                                .imageScale(.large)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.red)
+                        }
+                    }
+                }
             }
             .padding(.horizontal)
             
             // Sign up button
             Button {
-                
+                Task {
+                   try await viewModel.createUser(withEmail: email,
+                                         password: password,
+                                         fullName: fullName)
+                }
             } label: {
                 HStack {
                     Text("SIGN UP")
@@ -62,6 +85,8 @@ struct RegistrationView: View {
             }
             .background(Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 10))
+            .disabled(!isFormValid)
+            .opacity(isFormValid ? 1.0 : 0.5)
             .padding(.top, 20)
             
             Spacer()
@@ -77,6 +102,18 @@ struct RegistrationView: View {
                 }
             }
         }
+    }
+}
+
+//MARK: - Validate the fields
+extension RegistrationView: AuthenticationFormProtocol {
+    var isFormValid: Bool {
+        return !email.isEmpty
+        && email.contains("@")
+        && !password.isEmpty
+        && password.count > 5
+        && !fullName.isEmpty
+        && confirmPassword == password
     }
 }
 

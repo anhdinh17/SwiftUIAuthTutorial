@@ -10,6 +10,7 @@ import SwiftUI
 struct LoginView: View {
     @State var userEmail: String = ""
     @State var password = ""
+    @EnvironmentObject var viewModel: AuthViewModel
     
     var body: some View {
         NavigationStack {
@@ -32,7 +33,9 @@ struct LoginView: View {
                 
                 // Sign in button
                 Button {
-                    
+                    Task {
+                       try await viewModel.signIn(withEmail: userEmail, password: password)
+                    }
                 } label: {
                     HStack {
                         Text("SIGN IN")
@@ -45,6 +48,8 @@ struct LoginView: View {
                 }
                 .background(Color.blue)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                .disabled(!isFormValid)
+                .opacity(isFormValid ? 1.0 : 0.5)
                 .padding(.top, 20)
                 
                 Spacer()
@@ -64,6 +69,16 @@ struct LoginView: View {
                 }
             }
         }
+    }
+}
+
+//MARK: - Validate the fields
+extension LoginView: AuthenticationFormProtocol {
+    var isFormValid: Bool {
+        return !userEmail.isEmpty
+        && userEmail.contains("@")
+        && !password.isEmpty
+        && password.count > 5
     }
 }
 
