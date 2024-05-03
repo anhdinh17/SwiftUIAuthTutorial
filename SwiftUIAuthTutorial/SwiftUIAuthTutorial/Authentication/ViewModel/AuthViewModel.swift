@@ -37,7 +37,7 @@ class AuthViewModel: ObservableObject {
         
         /// Fetch user
         Task {
-            await fetchUser()
+            await fetUserSwiftfulThinking()
         }
     }
     
@@ -48,7 +48,7 @@ class AuthViewModel: ObservableObject {
             // Fetch user after sign in successfully.
             // If we don't fetchUser(), profileView will be blank
             // because it depends on self.currentUser
-            await fetchUser()
+            await fetUserSwiftfulThinking()
         } catch {
             print("ERRO LOGGIN IN: \(error.localizedDescription)")
         }
@@ -58,6 +58,8 @@ class AuthViewModel: ObservableObject {
         do {
             // createUser() is an async func
             let result = try await Auth.auth().createUser(withEmail: email, password: password)
+            // set thang nay de contentView biet userSession co value va ko con nil nua
+            // => display Profile view
             self.userSession = result.user
             let user = User(id: result.user.uid, fullName: fullName, email: email)
             
@@ -71,7 +73,7 @@ class AuthViewModel: ObservableObject {
             // in ProfileView
             await fetchUser()
         } catch {
-            
+            print("DEBUG ERROR: \(error.localizedDescription)")
         }
     }
     
@@ -106,6 +108,36 @@ class AuthViewModel: ObservableObject {
         // Decode
         // it goes to users/id and decode what in there into User model.
         self.currentUser = try? snapshot.data(as: User.self)
+        
+        print("CURRENT USER: \(self.currentUser)")
+    }
+    
+//MARK: - Swiftful thinking way
+    /// This func does same thing as what App Stuff did
+    /// The difference is we don't have to encode and we use setData(from: <Object>),
+    /// which is in document guide.
+    /// And the setData(from: ) is not an async func
+    func createUserSwiftfulThinking(withEmail email: String, password: String, fullName: String) async throws {
+        do {
+            let result = try await Auth.auth().createUser(withEmail: email, password: password)
+            self.userSession = result.user
+            let user = User(id: result.user.uid, fullName: fullName, email: email)
+            try Firestore.firestore().collection("users").document(user.id).setData(from: user)
+            await fetUserSwiftfulThinking()
+        } catch {
+            print("DEBUG ERROR CREATE USER: \(error.localizedDescription)")
+        }
+    }
+    
+    /// This func also works same as fetchUser from App Stuff
+    /// The difference is we use getDocument(as: <Object.self>)
+    /// We don't have to get snapshot and decode it to User.self
+    func fetUserSwiftfulThinking() async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let decodedUser = try? await Firestore.firestore().collection("users").document(uid).getDocument(as: User.self) else {
+            return
+        }
+        self.currentUser = decodedUser
         
         print("CURRENT USER: \(self.currentUser)")
     }

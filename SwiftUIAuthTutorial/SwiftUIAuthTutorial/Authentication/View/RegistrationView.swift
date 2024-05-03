@@ -69,7 +69,7 @@ struct RegistrationView: View {
             // Sign up button
             Button {
                 Task {
-                   try await viewModel.createUser(withEmail: email,
+                   try await viewModel.createUserSwiftfulThinking(withEmail: email,
                                          password: password,
                                          fullName: fullName)
                 }
