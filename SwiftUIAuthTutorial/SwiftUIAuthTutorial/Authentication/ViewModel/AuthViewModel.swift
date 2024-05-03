@@ -26,6 +26,7 @@ class AuthViewModel: ObservableObject {
         // Check if there's a user logged in
         // => contentView will know userSession has a value
         // => display ProfileView
+        // if there's noone signed in, it's still Nil => display Login
         self.userSession = Auth.auth().currentUser
         
         /// Explain
@@ -96,6 +97,7 @@ class AuthViewModel: ObservableObject {
     
     func fetchUser() async {
         // Check if there's current user logged in
+        // and get user's ID
         guard let uid = Auth.auth().currentUser?.uid else { return }
         // Get data at users/uid
         guard let snapshot = try? await Firestore.firestore().collection("users").document(uid).getDocument() else {

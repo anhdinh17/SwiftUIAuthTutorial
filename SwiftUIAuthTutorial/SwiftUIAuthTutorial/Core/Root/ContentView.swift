@@ -23,6 +23,7 @@ struct ContentView: View {
     }
 }
 
-//#Preview {
-//    ContentView()
-//}
+#Preview {
+    ContentView()
+        .environmentObject(AuthViewModel())
+}
