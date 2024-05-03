@@ -37,7 +37,7 @@ class AuthViewModel: ObservableObject {
         
         /// Fetch user
         Task {
-            await fetUserSwiftfulThinking()
+            await fetchUserSwiftfulThinking()
         }
     }
     
@@ -48,7 +48,7 @@ class AuthViewModel: ObservableObject {
             // Fetch user after sign in successfully.
             // If we don't fetchUser(), profileView will be blank
             // because it depends on self.currentUser
-            await fetUserSwiftfulThinking()
+            await fetchUserSwiftfulThinking()
         } catch {
             print("ERRO LOGGIN IN: \(error.localizedDescription)")
         }
@@ -61,7 +61,7 @@ class AuthViewModel: ObservableObject {
             // set thang nay de contentView biet userSession co value va ko con nil nua
             // => display Profile view
             self.userSession = result.user
-            let user = User(id: result.user.uid, fullName: fullName, email: email)
+            let user = User(id: result.user.uid, fullName: fullName, email: email, isPremium: false)
             
             // Encode User object just created
             // This is for FireStore
@@ -121,9 +121,9 @@ class AuthViewModel: ObservableObject {
         do {
             let result = try await Auth.auth().createUser(withEmail: email, password: password)
             self.userSession = result.user
-            let user = User(id: result.user.uid, fullName: fullName, email: email)
+            let user = User(id: result.user.uid, fullName: fullName, email: email, isPremium: false)
             try Firestore.firestore().collection("users").document(user.id).setData(from: user)
-            await fetUserSwiftfulThinking()
+            await fetchUserSwiftfulThinking()
         } catch {
             print("DEBUG ERROR CREATE USER: \(error.localizedDescription)")
         }
@@ -132,7 +132,7 @@ class AuthViewModel: ObservableObject {
     /// This func also works same as fetchUser from App Stuff
     /// The difference is we use getDocument(as: <Object.self>)
     /// We don't have to get snapshot and decode it to User.self
-    func fetUserSwiftfulThinking() async {
+    func fetchUserSwiftfulThinking() async {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         guard let decodedUser = try? await Firestore.firestore().collection("users").document(uid).getDocument(as: User.self) else {
             return
@@ -141,4 +141,25 @@ class AuthViewModel: ObservableObject {
         
         print("CURRENT USER: \(self.currentUser)")
     }
+    
+    func updateUserPremiumStatus() async throws {
+        // We got to do 2 things
+        do {
+            /// 1. update the document
+            // get current user
+            guard let userID = self.currentUser?.id else { return }
+            // update field
+            try await Firestore.firestore().collection("users").document(userID).updateData(["isPremium" : !(self.currentUser?.isPremium ?? false)])
+            
+            /// 2. Fetch new user
+            await fetchUserSwiftfulThinking()
+        } catch {
+            print("DEBUG UPDATE PREMIUM: \(error.localizedDescription)")
+        }
+    }
+    /** ---NOTE---
+        - This way works. We can also use the way ST used. He created new User object based on current user object, set value for isPremium, then overwrite the whole document with .setData(from: <new User object>)
+        - Cách của ST cũng hay, đặc biệt là nếu User đang ko có isPremium và mình chèn vào 1 property mới thì nên overwrite lại toàn bộ document.
+        - Well, he used updateData as well because it's safer.
+     */
 }

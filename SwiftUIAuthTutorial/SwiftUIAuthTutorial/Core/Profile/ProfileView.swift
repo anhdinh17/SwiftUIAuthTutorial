@@ -66,6 +66,30 @@ struct ProfileView: View {
                                        tintColor: .red)
                     }
                 }
+                
+                //MARK: - Swiftful Thinking
+                Section("Upgrade your account") {
+                    Button {
+                        // Toggle Premium
+                        Task {
+                            try await viewModel.updateUserPremiumStatus()
+                        }
+                    } label: {
+                        Text("Toggle Premium Status")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Color.white)
+                    }
+                    .frame(width: UIScreen.main.bounds.width - 64, height: 40)
+                    .background(Color.blue)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    
+                    if let userPremiumStatus = user.isPremium {
+                        Text("User's Permimum Status: \(userPremiumStatus)")
+                            .font(.system(size: 15))
+                            .fontWeight(.semibold)
+                            .frame(width: UIScreen.main.bounds.width - 64, height: 40)
+                    }
+                }
             }
         }
     }
