@@ -10,6 +10,18 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     
+    //MARK: - Swiftful thinking
+    private let preferenceOptions: [String] = ["Sport", "Music", "Books"]
+    // Check if preference is in the user.preference array or not?
+    private func isPreferenceSelected(preference: String) -> Bool {
+        guard let user = viewModel.currentUser,
+              let userPreference = user.preference
+        else {
+            return false
+        }
+        return userPreference.contains(preference)
+    }
+    
     var body: some View {
         // if there's a logged in user
         if let user = viewModel.currentUser {
@@ -89,6 +101,32 @@ struct ProfileView: View {
                             .fontWeight(.semibold)
                             .frame(width: UIScreen.main.bounds.width - 64, height: 40)
                     }
+                }
+                
+                Section("User Preferences") {
+                    HStack {
+                        ForEach(preferenceOptions, id: \.self) { preference in
+                            Button {
+                                Task {
+                                    // if preference already in array, we delete it.
+                                    if isPreferenceSelected(preference: preference){
+                                        try await viewModel.removeUserPreference(preference: preference)
+                                    } else {
+                                        // Add to array
+                                        try await viewModel.addUserPreference(preference: preference)
+                                    }
+                                }
+                            } label: {
+                                Text(preference)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(BorderedProminentButtonStyle())
+                            // Nếu preference nằm trong array của user thì button có tint là green
+                            .tint( isPreferenceSelected(preference: preference) ? .green : .red)
+                        }
+                    }
+                    
+                    Text("User Preferences: \((user.preference ?? []).joined(separator: ", "))")
                 }
             }
         }

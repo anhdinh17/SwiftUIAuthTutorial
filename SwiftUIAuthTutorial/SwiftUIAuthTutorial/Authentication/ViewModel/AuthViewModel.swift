@@ -150,6 +150,7 @@ class AuthViewModel: ObservableObject {
             guard let userID = self.currentUser?.id else { return }
             // update field
             try await Firestore.firestore().collection("users").document(userID).updateData(["isPremium" : !(self.currentUser?.isPremium ?? false)])
+            // ---- IMPORTANT ----: if at that position, we don't have "isPremium" yet, then Firestore will create it.
             
             /// 2. Fetch new user
             await fetchUserSwiftfulThinking()
@@ -162,4 +163,42 @@ class AuthViewModel: ObservableObject {
         - Cách của ST cũng hay, đặc biệt là nếu User đang ko có isPremium và mình chèn vào 1 property mới thì nên overwrite lại toàn bộ document.
         - Well, he used updateData as well because it's safer.
      */
+    
+    // Add an element to array
+    func addUserPreference(preference: String) async throws {
+        do {
+            guard let userID = self.currentUser?.id else { return }
+            let data: [String : Any] = [
+                "preference" : FieldValue.arrayUnion([preference])
+                // First of all, we want preference to be an array on DB.
+                // That's why we use this syntax.
+                // When first creating a user, this field is nil
+                // FieldValue is the value right now at that field.
+                // arrayUnion adds array into field, make everything into 1 array.
+                // But .arrayUnion only adds elements that are not presented yet.
+                // For example, if array in DB already has "sport" at an index,
+                // we can't add more "sport" to array.
+            ]
+            try await Firestore.firestore().collection("users").document(userID).updateData(data)
+            
+            await fetchUserSwiftfulThinking()
+        } catch {
+            print("DEBUG ADD USER PREFERENCE TO ARRAY: \(error.localizedDescription)")
+        }
+    }
+    
+    // Remove an element
+    func removeUserPreference(preference: String) async throws {
+        do {
+            guard let userID = self.currentUser?.id else { return }
+            let data: [String : Any] = [
+                "preference" : FieldValue.arrayRemove([preference])
+            ]
+            try await Firestore.firestore().collection("users").document(userID).updateData(data)
+            
+            await fetchUserSwiftfulThinking()
+        } catch {
+            print("DEBUG ADD USER PREFERENCE TO ARRAY: \(error.localizedDescription)")
+        }
+    }
 }
