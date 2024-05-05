@@ -201,4 +201,42 @@ class AuthViewModel: ObservableObject {
             print("DEBUG ADD USER PREFERENCE TO ARRAY: \(error.localizedDescription)")
         }
     }
+    
+    // Add a custom object
+    func addMovieObject() async throws {
+        // Mocking object
+        let movie = Movie(id: "1", title: "Cold War", isPopular: false)
+        
+        do {
+            guard let userID = self.currentUser?.id else { return }
+            
+            /// MUST ENCODE the object
+            let encodedData = try Firestore.Encoder().encode(movie)
+            
+            let data: [String : Any?] = [
+                "favoriteMovie" : encodedData
+            ]
+            try await Firestore.firestore().collection("users").document(userID).updateData(data as [AnyHashable : Any])
+            // as [AnyHashable : Any] is because we set data is [String : Any?]
+            
+            await fetchUserSwiftfulThinking()
+        } catch {
+            print("DEBUG: ERROR ADDING CUSTOM OBJECT: \(error.localizedDescription)")
+        }
+    }
+    
+    // Remove Movie object from DB
+    func removeMovieObject() async throws {
+        do {
+            guard let userID = self.currentUser?.id else { return }
+            let data: [String : Any?] = [
+                "favoriteMovie" : nil
+            ]
+            try await Firestore.firestore().collection("users").document(userID).updateData(data as [AnyHashable : Any])
+            
+            await fetchUserSwiftfulThinking()
+        } catch {
+            print("DEBUG REMOVING MOVIE CUSTOM OBJECT: \(error.localizedDescription)")
+        }
+    }
 }

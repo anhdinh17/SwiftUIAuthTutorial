@@ -7,6 +7,12 @@
 
 import Foundation
 
+struct Movie: Codable {
+    let id: String
+    let title: String
+    let isPopular: Bool
+}
+
 struct User: Identifiable, Codable {
     let id: String
     let fullName: String
@@ -14,6 +20,7 @@ struct User: Identifiable, Codable {
     //MARK: - Swiftful Thinking
     let isPremium: Bool?
     var preference: [String]?
+    var favoriteMovie: Movie?
     
     var initials: String {
         let formatter = PersonNameComponentsFormatter()
@@ -55,5 +62,11 @@ struct User: Identifiable, Codable {
 }
 
 extension User {
-    static let MOCK_USER = User(id: UUID().uuidString, fullName: "Kobe Bryan", email: "kobebryan@email.com", isPremium: false)
+    static let MOCK_USER = User(id: UUID().uuidString,
+                                fullName: "Kobe Bryan",
+                                email: "kobebryan@email.com",
+                                isPremium: false,
+                                favoriteMovie: Movie(id: UUID().uuidString,
+                                                     title: "Titanic",
+                                                     isPopular: true))
 }

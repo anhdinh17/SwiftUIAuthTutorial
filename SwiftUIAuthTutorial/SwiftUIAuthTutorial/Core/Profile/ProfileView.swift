@@ -80,7 +80,7 @@ struct ProfileView: View {
                 }
                 
                 //MARK: - Swiftful Thinking
-                Section("Upgrade your account") {
+                Section("Update a field") {
                     Button {
                         // Toggle Premium
                         Task {
@@ -103,7 +103,7 @@ struct ProfileView: View {
                     }
                 }
                 
-                Section("User Preferences") {
+                Section("Working with array") {
                     HStack {
                         ForEach(preferenceOptions, id: \.self) { preference in
                             Button {
@@ -127,6 +127,34 @@ struct ProfileView: View {
                     }
                     
                     Text("User Preferences: \((user.preference ?? []).joined(separator: ", "))")
+                }
+                
+                Section("Add/remove a Custom Object") {
+                    Button {
+                        Task {
+                             try await viewModel.addMovieObject()
+                        }
+                    } label: {
+                        Text("Add a movie object")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Color.white)
+                            .frame(maxWidth: .infinity, minHeight: 40)
+                            .background(.blue)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    
+                    Button {
+                        Task {
+                             try await viewModel.removeMovieObject()
+                        }
+                    } label: {
+                        Text("Remove a movie object")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Color.white)
+                            .frame(maxWidth: .infinity, minHeight: 40)
+                            .background(.red)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
                 }
             }
         }
