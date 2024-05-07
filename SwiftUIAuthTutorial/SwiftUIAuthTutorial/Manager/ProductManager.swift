@@ -47,15 +47,30 @@ class ProductManager {
     func getAllProductsByUsingGeneric() async throws -> [Product] {
         return try await productCollectionPath.getAllDocumentsShortForm(as: Product.self)
     }
+    
+    func getAllProductsSortedByPrice(isDescending: Bool) async throws -> [Product]{
+        // .order is handled by Firestore,
+        // it will sort the documents based on the field we set, i.e "price"
+        // then we use the Generice .getAllDocuments to get all documents @ the collection path.
+        return try await productCollectionPath.order(by: "price", descending: isDescending).getAllDocuments(as: Product.self)
+    }
+    
+    func getAllProductsForCategory(category: String) async throws -> [Product]{
+        // Firestore filter the documents based on the field we want
+        // In this case, the field is "category".
+        // We want to filter the category that is equal to what we select
+        return try await productCollectionPath.whereField("category", isEqualTo: category).getAllDocuments(as: Product.self)
+    }
 }
 
 extension Query {
     /// Generic func to download all documents in Firestore
-    /// when we use 'self' => it's collection path.
+    /// when we use 'self' => it's 1 collection path.
     /// For example, Firestore.firestore().collection("products") = Query
+    ///  => self = Firestore.firestore().collection("products")
     func getAllDocuments<T: Decodable>(as type: T.Type) async throws -> [T] {
         var productsArray: [T] = []
-        // Get all documents in the collection
+        // Get all documents at the specific collection
         let snapshot = try await self.getDocuments()
         for product in snapshot.documents {
             // cast each product into T type

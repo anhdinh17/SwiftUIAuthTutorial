@@ -17,6 +17,8 @@ enum ErrorNetworking: Error {
 @MainActor
 final class ProductsViewModel: ObservableObject {
     @Published var products: [Product] = []
+    @Published var selectedFilter: FilterOption = .none // First get to the screen, this should be none
+    @Published var selectedCategory: CategoryOption = .none
     
     /// This func used only once to network data from server and push to DB
     /// We don't need it after that.
@@ -60,18 +62,88 @@ final class ProductsViewModel: ObservableObject {
 //        }
         self.products = try await ProductManager.shared.getAllProductsByUsingGeneric()
     }
+    
+    enum FilterOption: String, CaseIterable {
+        case none
+        case priceHigh
+        case priceLow
+    }
+    
+    func filterSelected(option: FilterOption) async throws {
+        switch option {
+        case .none:
+            self.products = try await ProductManager.shared.getAllProductsByUsingGeneric()
+        case .priceHigh:
+            // Get the sorted documents
+            self.products = try await ProductManager.shared.getAllProductsSortedByPrice(isDescending: true)
+        case .priceLow:
+            self.products = try await ProductManager.shared.getAllProductsSortedByPrice(isDescending: false)
+        }
+        // Keep track of selected filter
+        self.selectedFilter = option
+    }
+    
+    enum CategoryOption: String, CaseIterable {
+        case none
+        case smartphones
+        case laptops
+        case fragrances
+    }
+    
+    func categorySelected(option: CategoryOption) async throws {
+        switch option {
+        case .none:
+            self.products = try await ProductManager.shared.getAllProductsByUsingGeneric()
+        case .smartphones, .laptops, .fragrances:
+            self.products = try await ProductManager.shared.getAllProductsForCategory(category: option.rawValue)
+        }
+        // Keep track of selected filter
+        self.selectedCategory = option
+    }
+    
 }
 
 struct ProductsView: View {
     @StateObject private var viewModel = ProductsViewModel()
     var body: some View {
-        List {
-            ForEach(viewModel.products){ product in
-                ProductCellView(product: product)
+        NavigationStack {
+            List {
+                ForEach(viewModel.products){ product in
+                    ProductCellView(product: product)
+                }
             }
-        }
-        .task {
-            try? await viewModel.getAllProducts()
+            .navigationTitle("Products")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Menu("Filter: \(viewModel.selectedFilter.rawValue)") {
+                        // Loop through enum cases to create button regarding the case
+                        ForEach(ProductsViewModel.FilterOption.allCases, id: \.self){ eachCase in
+                            Button(eachCase.rawValue){
+                                // Click on each button will
+                                // trigger filterSelected() with case respectively.
+                                Task {
+                                    try await viewModel.filterSelected(option: eachCase)
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu("Category: \(viewModel.selectedCategory.rawValue)") {
+                        ForEach(ProductsViewModel.CategoryOption.allCases, id: \.self){ eachCase in
+                            Button(eachCase.rawValue){
+                                Task {
+                                    try await viewModel.categorySelected(option: eachCase)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .task {
+                try? await viewModel.getAllProducts()
+            }
         }
     }
 }
