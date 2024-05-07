@@ -23,6 +23,10 @@
 		674A1E8A2BE2A09D00C281AA /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 674A1E892BE2A09D00C281AA /* FirebaseFirestoreSwift */; };
 		674A1E8C2BE2A09D00C281AA /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 674A1E8B2BE2A09D00C281AA /* FirebaseStorage */; };
 		674A1E902BE2A13F00C281AA /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674A1E8F2BE2A13F00C281AA /* AuthViewModel.swift */; };
+		679F372C2BE92BCF00A5CC11 /* ProductDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679F372B2BE92BCF00A5CC11 /* ProductDatabase.swift */; };
+		679F372F2BE92DFF00A5CC11 /* ProductsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679F372E2BE92DFF00A5CC11 /* ProductsView.swift */; };
+		679F37322BE937B300A5CC11 /* ProductManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679F37312BE937B300A5CC11 /* ProductManager.swift */; };
+		67B106212BE964D1002A5F6A /* ProductCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B106202BE964D1002A5F6A /* ProductCellView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +43,10 @@
 		674A1E802BE2105D00C281AA /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		674A1E822BE29F0900C281AA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		674A1E8F2BE2A13F00C281AA /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		679F372B2BE92BCF00A5CC11 /* ProductDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDatabase.swift; sourceTree = "<group>"; };
+		679F372E2BE92DFF00A5CC11 /* ProductsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsView.swift; sourceTree = "<group>"; };
+		679F37312BE937B300A5CC11 /* ProductManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductManager.swift; sourceTree = "<group>"; };
+		67B106202BE964D1002A5F6A /* ProductCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCellView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +87,7 @@
 				674A1E742BE1FC4A00C281AA /* Authentication */,
 				674A1E712BE1FBF000C281AA /* Core */,
 				674A1E702BE1FBE900C281AA /* Components */,
+				679F37302BE9379F00A5CC11 /* Manager */,
 				674A1E722BE1FBF700C281AA /* Model */,
 				674A1E652BE1FAFD00C281AA /* Assets.xcassets */,
 				674A1E822BE29F0900C281AA /* GoogleService-Info.plist */,
@@ -115,6 +124,7 @@
 		674A1E712BE1FBF000C281AA /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				679F372D2BE92DDE00A5CC11 /* Product */,
 				674A1E752BE1FC5400C281AA /* Profile */,
 				674A1E732BE1FC3000C281AA /* Root */,
 			);
@@ -125,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				674A1E802BE2105D00C281AA /* User.swift */,
+				679F372B2BE92BCF00A5CC11 /* ProductDatabase.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -169,6 +180,23 @@
 				674A1E8F2BE2A13F00C281AA /* AuthViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		679F372D2BE92DDE00A5CC11 /* Product */ = {
+			isa = PBXGroup;
+			children = (
+				679F372E2BE92DFF00A5CC11 /* ProductsView.swift */,
+				67B106202BE964D1002A5F6A /* ProductCellView.swift */,
+			);
+			path = Product;
+			sourceTree = "<group>";
+		};
+		679F37302BE9379F00A5CC11 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				679F37312BE937B300A5CC11 /* ProductManager.swift */,
+			);
+			path = Manager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,12 +279,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				679F372C2BE92BCF00A5CC11 /* ProductDatabase.swift in Sources */,
 				674A1E772BE1FCAF00C281AA /* LoginView.swift in Sources */,
 				674A1E792BE1FEE700C281AA /* InputView.swift in Sources */,
 				674A1E7F2BE20E3500C281AA /* SettingRowView.swift in Sources */,
 				674A1E642BE1FAFA00C281AA /* ContentView.swift in Sources */,
 				674A1E812BE2105D00C281AA /* User.swift in Sources */,
 				674A1E622BE1FAFA00C281AA /* SwiftUIAuthTutorialApp.swift in Sources */,
+				67B106212BE964D1002A5F6A /* ProductCellView.swift in Sources */,
+				679F37322BE937B300A5CC11 /* ProductManager.swift in Sources */,
+				679F372F2BE92DFF00A5CC11 /* ProductsView.swift in Sources */,
 				674A1E7D2BE20C2000C281AA /* ProfileView.swift in Sources */,
 				674A1E7B2BE2056F00C281AA /* RegistrationView.swift in Sources */,
 				674A1E902BE2A13F00C281AA /* AuthViewModel.swift in Sources */,

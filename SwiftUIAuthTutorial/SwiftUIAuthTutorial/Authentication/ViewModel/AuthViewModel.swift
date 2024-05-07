@@ -108,8 +108,6 @@ class AuthViewModel: ObservableObject {
         // Decode
         // it goes to users/id and decode what in there into User model.
         self.currentUser = try? snapshot.data(as: User.self)
-        
-        print("CURRENT USER: \(self.currentUser)")
     }
     
 //MARK: - Swiftful thinking way
@@ -138,8 +136,6 @@ class AuthViewModel: ObservableObject {
             return
         }
         self.currentUser = decodedUser
-        
-        print("CURRENT USER: \(self.currentUser)")
     }
     
     func updateUserPremiumStatus() async throws {
@@ -211,6 +207,7 @@ class AuthViewModel: ObservableObject {
             guard let userID = self.currentUser?.id else { return }
             
             /// MUST ENCODE the object
+            /// Because Firestore doesn't support pushing directly a custom object to a document.
             let encodedData = try Firestore.Encoder().encode(movie)
             
             let data: [String : Any?] = [

@@ -18,8 +18,9 @@ struct SwiftUIAuthTutorialApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(authViewModel)
+//            ContentView()
+//                .environmentObject(authViewModel)
+            ProductsView()
         }
     }
 }
