@@ -52,14 +52,14 @@ class ProductManager {
         // .order is handled by Firestore,
         // it will sort the documents based on the field we set, i.e "price"
         // then we use the Generice .getAllDocuments to get all documents @ the collection path.
-        return try await productCollectionPath.order(by: "price", descending: isDescending).getAllDocuments(as: Product.self)
+        return try await productCollectionPath.order(by: Product.CodingKeys.price.rawValue, descending: isDescending).getAllDocuments(as: Product.self)
     }
     
     func getAllProductsForCategory(category: String) async throws -> [Product]{
         // Firestore filter the documents based on the field we want
         // In this case, the field is "category".
         // We want to filter the category that is equal to what we select
-        return try await productCollectionPath.whereField("category", isEqualTo: category).getAllDocuments(as: Product.self)
+        return try await productCollectionPath.whereField(Product.CodingKeys.category.rawValue, isEqualTo: category).getAllDocuments(as: Product.self)
     }
 }
 
